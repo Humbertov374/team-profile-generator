@@ -4,10 +4,16 @@ const Intern = require("./lib/Intern");
 const inquirer = require("inquirer");
 const path = require("path");
 const fs = require("fs");
-const OUTPUT_DIR = path.resolve(__dirname, "output");
+
+const OUTPUT_DIR = path.resolve(__dirname, "dist");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
+
 const render = require("./lib/htmlRenderer");
+
+// Array to store team info
 const teamProfile = [];
+
+// Function to get user input
 function teamProfileBuilder() {
     inquirer
         .prompt([
@@ -34,12 +40,12 @@ function teamProfileBuilder() {
         ])
         .then(data => {
             let manager = new Manager(data.name, data.id, data.email, data.officeNumber);
-
             teamProfile.push(manager);
             addMember();
         })
 }
 
+// Function to ask user if they want to add a member or if they are done.
 function addMember() {
     inquirer
         .prompt([
@@ -50,7 +56,6 @@ function addMember() {
                 choices: ["Engineer", "Intern", "Team Complete"]
             }
         ])
-}
         .then(choice => {
             if (choice.member === "Engineer") {
                 addEngineer();
@@ -64,8 +69,10 @@ function addMember() {
         })
 }
 
+// Function to render info to html file
 function completeProfile() {
-    console.dir(teamProfile);
+    fs.writeFileSync(outputPath, render(teamProfile));
+    console.log("Team Profile Complete!");
 }
 
 function addEngineer() {
